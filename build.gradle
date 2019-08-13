@@ -5,15 +5,26 @@ apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 apply plugin: 'distribution'
 apply plugin: 'checkstyle'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'maven-publish-auth'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
 
-repositories {
-    mavenCentral()
+buildscript {
+    dependencies {
+        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
+    }
+    repositories {
+        maven {
+            url "https://paypalcentral.es.paypalcorp.com/nexus/content/groups/public/"
+        }
+    }
 }
+
 
 sourceSets {
     main {
@@ -144,7 +155,6 @@ task sourceJar(type: Jar) {
     from sourceSets.main.allJava
 }
 
-
 publishing {
     publications {
         rhino(MavenPublication) {
@@ -192,6 +202,7 @@ publishing {
     if (project.hasProperty("mavenPassword")) {
         repositories {
             maven {
+                name "raptor.snapshots"
                 credentials {
                     username mavenUser
                     password mavenPassword
